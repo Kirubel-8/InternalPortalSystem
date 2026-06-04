@@ -99,7 +99,11 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
-}
+    }
+    .text-muted {
+        height: 20px !important;
+        margin-top: 15px !important;
+    }
 
 </style>
 
@@ -164,9 +168,9 @@
                     <!-- <li class="nav-item">
                         <a href="#faq" class="nav-link">FAQ</a>
                     </li> -->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a href="#contact" class="nav-link">Contact</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a href="https://hrms.aii.et/vacancies/list" class="nav-link">Job</a>
                     </li>
@@ -321,25 +325,9 @@
     <!-- END CTA -->
 
     <!-- START BLOG -->
-    <section class="section bg-light" id="blog">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="title-heading text-center">
-                        <h3>Announcement</h3>
-                        <h1 class="title-border"></h1>
-                        <!-- <ul class="text-muted">This is internal announcement for employeer of the organization.</ul> -->
-                    </div>
-                </div>
-            </div>
 
-            <div class="row mt-5 pt-3">
-              
-                @include('posts.blog')
-            </div>
-
-        </div>
-    </section>
+        @include('posts.blog')
+        
     <!-- END BLOG -->
 
     <!-- START FAQ -->
@@ -455,7 +443,7 @@
     <!-- END FAQ -->
 
     <!-- START CONTACT -->
-    <section class="section" id="contact">
+    <!-- <section class="section" id="contact">
         <div class="container">
 
             <div class="row">
@@ -476,7 +464,7 @@
                         </div>
                         <div class="contact-info">
                             <p class="f-16 mb-0">Phone Number</p>
-                            <p class="text-muted mb-0">+251-934-123-123</p>
+                            <p class="text-muted mb-0">+251115588786 / +251115585484</p>
                         </div>
                     </div>
                 </div>
@@ -487,7 +475,7 @@
                         </div>
                         <div class="contact-info">
                             <p class="f-16 mb-0">Email Address</p>
-                            <p class="text-muted mb-0">EthiopianAII@gmail.com</p>
+                            <p class="text-muted mb-0">contact@aii.et</p>
                         </div>
                     </div>
                 </div>
@@ -567,7 +555,7 @@
                 </div> --}}
             {{-- </div> --}}
         </div>
-    </section>
+    </section> -->
     <!-- END CONTECT -->
 
     <!-- START FOOTER -->
