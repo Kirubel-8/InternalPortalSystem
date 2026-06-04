@@ -214,7 +214,12 @@
                 var postBody = $(this).data('body');
                 var postImage = $(this).data('image');
 
-                $('#editForm').attr('action', '/posts/' + postId);
+                // Fix the URL - use the admin prefix from current URL
+                var pathParts = window.location.pathname.split('/');
+                var adminPrefix = pathParts[1];
+                
+                // Set form action with admin prefix
+                $('#editForm').attr('action', '/' + adminPrefix + '/posts/' + postId);
                 $('#edit_title').val(postTitle);
                 $('#edit_body').val(postBody);
                 
@@ -229,8 +234,11 @@
             $('.delete').on('click', function() {
                 var postId = $(this).data('id');
                 var postTitle = $(this).data('title');
-
-                $('#deleteForm').attr('action', '/posts/' + postId);
+                
+                var pathParts = window.location.pathname.split('/');
+                var adminPrefix = pathParts[1];
+                
+                $('#deleteForm').attr('action', '/' + adminPrefix + '/posts/' + postId);
                 $('#delete_message').html('Are you sure you want to delete the announcement <strong>"' + postTitle + '"</strong>?');
             });
         });
