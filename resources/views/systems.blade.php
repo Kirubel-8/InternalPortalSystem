@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>AII</title>
+    <title>EAII Internal Portal System</title>
+    <!-- <link rel="icon" type="image/jpg" href="{{ asset('admin/logo/EAIIlogo.jpg') }}"> -->
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
     <meta name="keywords" content="bootstrap 4, premium, marketing, multipurpose" />
     <meta content="Themesdesign" name="author" />
     <!-- favicon -->
-    <link rel="shortcut icon" href="layouts/images/favicon.ico">
+    <link rel="shortcut icon" href="{{ asset('admin/favicon.ico') }}">
     <!-- magnific pop-up -->
     <link rel="stylesheet" type="text/css" href="layouts/css/magnific-popup.css" />
     <!-- css -->
@@ -560,16 +562,15 @@
 
     <!-- START FOOTER -->
     <section class="bg-footer">
-        
-            <div class="text-center">
-                <img src="layouts/images/logo-light.png" class="logo-light" alt="" height="53">
-            </br>
-                <p class="footer-alt mb-0">{{ date('Y') }} © Copyright - Ethiopian Artificial Intelligence Institute</p>
+        <div class="text-center">
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <img src="admin/logo/EAIIlogo.jpg" class="logo-light" alt="EAII Logo" 
+                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%;">
+            </div>
+            <p class="footer-alt mb-0">{{ date('Y') }} © Copyright - Ethiopian Artificial Intelligence Institute</p>
         </div>
-        
     </section>
     <!-- END FOOTER -->
-
     <!-- javascript -->
     <script src="layouts/js/jquery.min.js"></script>
     <script src="layouts/js/bootstrap.bundle.min.js"></script>
