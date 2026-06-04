@@ -224,7 +224,12 @@
                 var sysUrl = $(this).data('url');
                 var sysImage = $(this).data('image');
 
-                $('#editForm').attr('action', '/systems/' + sysId);
+                // Fix the URL - use the admin prefix from current URL
+                var pathParts = window.location.pathname.split('/');
+                var adminPrefix = pathParts[1];
+                
+                // Set form action with admin prefix
+                $('#editForm').attr('action', '/' + adminPrefix + '/systems/' + sysId);
                 $('#edit_name').val(sysName);
                 $('#edit_description').val(sysDescription);
                 $('#edit_url').val(sysUrl);
@@ -240,10 +245,14 @@
             $('.delete').on('click', function() {
                 var sysId = $(this).data('id');
                 var sysName = $(this).data('name');
-
-                $('#deleteForm').attr('action', '/systems/' + sysId);
+                
+                var pathParts = window.location.pathname.split('/');
+                var adminPrefix = pathParts[1];
+                
+                $('#deleteForm').attr('action', '/' + adminPrefix + '/systems/' + sysId);
                 $('#delete_message').html('Are you sure you want to delete the service <strong>"' + sysName + '"</strong>?');
             });
         });
     </script>
+
 @endsection
