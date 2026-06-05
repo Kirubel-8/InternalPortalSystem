@@ -36,7 +36,7 @@ class SystemController extends Controller
             'name' => 'required|string|max:255|min:3|unique:systems',
             'description' => 'required|string|min:10',
             'url' => 'required|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ], [
             'name.required' => 'Service name is required',
             'name.unique' => 'This service name already exists',
@@ -64,7 +64,12 @@ class SystemController extends Controller
         }
 
         $system->save();
-        return redirect('/systems')->with('success', 'Service added successfully!');
+        
+        // Get admin prefix from the request URL
+        $pathParts = explode('/', url()->previous());
+        $adminPrefix = $pathParts[3] ?? env('ADMIN_SECRET', 'admin-panel');
+        
+        return redirect('/' . $adminPrefix . '/systems')->with('success', 'Service added successfully!');
     }
 
     /**
@@ -86,12 +91,16 @@ class SystemController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * Changed from System $system to $id for better compatibility
      */
-    public function update(Request $request, System $system)
+    public function update(Request $request, $id)
     {
+        // Find the system by ID
+        $system = System::findOrFail($id);
+        
         // Validate input
         $request->validate([
-            'name' => 'required|string|max:255|min:3|unique:systems,name,' . $system->id,
+            'name' => 'required|string|max:255|min:3|unique:systems,name,' . $id,
             'description' => 'required|string|min:10',
             'url' => 'required|url',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -118,20 +127,32 @@ class SystemController extends Controller
         }
 
         $system->save();
-        return redirect('/systems')->with('success', 'Service updated successfully!');
+        
+        // Get admin prefix from the request URL
+        $pathParts = explode('/', url()->previous());
+        $adminPrefix = $pathParts[3] ?? env('ADMIN_SECRET', 'admin-panel');
+        
+        return redirect('/' . $adminPrefix . '/systems')->with('success', 'Service updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(System $system)
+    public function destroy($id)
     {
+        $system = System::findOrFail($id);
+        
         // Delete image if exists
         if ($system->image && Storage::disk('public')->exists($system->image)) {
             Storage::disk('public')->delete($system->image);
         }
 
         $system->delete();
-        return redirect()->route('systems.index')->with('success', 'Service deleted successfully!');
+        
+        // Get admin prefix from the request URL
+        $pathParts = explode('/', url()->previous());
+        $adminPrefix = $pathParts[3] ?? env('ADMIN_SECRET', 'admin-panel');
+        
+        return redirect('/' . $adminPrefix . '/systems')->with('success', 'Service deleted successfully!');
     }
 }
