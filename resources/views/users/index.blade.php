@@ -259,6 +259,97 @@
     }
 </style>
 
+<style>
+/* Modal Styles for Delete */
+.modal .modal-content {
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: none;
+    overflow: hidden;
+    animation: modalFadeIn 0.3s ease;
+}
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Center Modal Vertically and Horizontally */
+.modal {
+    text-align: center;
+    padding: 0 !important;
+}
+
+.modal:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -4px;
+}
+
+.modal .modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+    width: 90%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.modal-sm .modal-dialog {
+    max-width: 400px;
+}
+
+/* Button Styles for Delete Modal */
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108,117,125,0.3);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220,53,69,0.3);
+}
+</style>
+
 <div class="container">
     <div class="table-responsive">
         <div class="table-wrapper">
@@ -363,24 +454,25 @@
     </div>
 </div>
 
-<!-- Delete Modal -->
-<div id="deleteEmployeeModal" class="modal fade">
-    <div class="modal-dialog">
+<!-- DELETE Modal -->
+<div id="deleteEmployeeModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <form id="deleteForm" method="POST">
                 @csrf
                 @method('DELETE')
-                <div class="modal-header">
-                    <h4 class="modal-title">Delete User</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                    <h4 class="modal-title"><i class="fa fa-trash mr-2"></i> Delete User</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
-                <div class="modal-body">
-                    <p id="delete_message">Are you sure you want to delete this user?</p>
-                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                <div class="modal-body text-center">
+                    <i class="fa fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                    <p id="delete_message" style="font-size: 14px;">Are you sure you want to delete this user?</p>
+                    <p class="text-warning small">This action cannot be undone.</p>
                 </div>
-                <div class="modal-footer">
-                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                <div class="modal-footer" style="justify-content: center;">
+                    <button type="button" class="btn-cancel" data-dismiss="modal"><i class="fa fa-times mr-1"></i> Cancel</button>
+                    <button type="submit" class="btn-delete"><i class="fa fa-trash mr-1"></i> Delete </button>
                 </div>
             </form>
         </div>
@@ -458,8 +550,12 @@ $(document).ready(function() {
         });
     });
     
-    // Delete button click
+    // Delete button click - ensure any existing backdrop is removed
     $('.delete').on('click', function() {
+        // Remove any existing modal backdrops
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+        
         var userId = $(this).data('id');
         var userName = $(this).data('name');
         var deleteUrl = '/' + adminPrefix + '/users/' + userId;
@@ -476,13 +572,18 @@ $(document).ready(function() {
         var userName = $('#delete_message').find('strong').text().replace(/"/g, '');
         var rowId = url.split('/').pop();
         
+        // First, hide the modal properly
+        $('#deleteEmployeeModal').modal('hide');
+        
+        // Remove modal backdrop manually
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+        
         $.ajax({
             url: url,
             type: 'POST',
             data: form.serialize(),
             success: function(response) {
-                $('#deleteEmployeeModal').modal('hide');
-                
                 // Remove the row from table
                 $('#user-row-' + rowId).fadeOut(500, function() {
                     $(this).remove();
@@ -500,11 +601,21 @@ $(document).ready(function() {
                 showAlert('success', 'User ' + userName + ' deleted successfully!', 3000);
             },
             error: function(xhr) {
-                $('#deleteEmployeeModal').modal('hide');
-                var errorMsg = xhr.responseJSON?.message || 'Error deleting user';
-                showAlert('danger', errorMsg, 3000);
+                showAlert('danger', xhr.responseJSON?.message || 'Error deleting user', 3000);
             }
         });
+    });
+
+    // Clean up modal backdrop when modal is closed
+    $('#deleteEmployeeModal').on('hidden.bs.modal', function() {
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+    });
+
+    // Also handle any other modals that might leave backdrops
+    $('.modal').on('hidden.bs.modal', function() {
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
     });
     
     // Show any flash messages
