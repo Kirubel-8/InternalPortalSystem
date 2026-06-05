@@ -551,21 +551,102 @@
     }
 </style>
 
+<style>
+    /* Toast Notification Style - Positioned at top right */
+    .toast-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 450px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        animation: slideInRight 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast-notification.success {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border-left: 4px solid #fff;
+    }
+
+    .toast-notification.error {
+        background: linear-gradient(135deg, #dc3545, #bd2130);
+        color: white;
+        border-left: 4px solid #fff;
+    }
+
+    .toast-notification.warning {
+        background: linear-gradient(135deg, #ffc107, #e0a800);
+        color: #212529;
+        border-left: 4px solid #fff;
+    }
+
+    .toast-notification i {
+        font-size: 20px;
+    }
+
+    .toast-notification .close-toast {
+        margin-left: auto;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+        font-size: 18px;
+    }
+
+    .toast-notification .close-toast:hover {
+        opacity: 1;
+    }
+
+    /* Remove old alert styles */
+    .alert {
+        display: none !important;
+    }
+
+    /* Hide default Laravel flash messages */
+    .alert-success, .alert-danger, .alert-warning {
+        display: none;
+    }
+</style>
+
 <body>
     <div class="container">
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
         @if($errors->any())
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" style="display: none;">
                 @foreach($errors->all() as $error)
                     <div>{{ $error }}</div>
                 @endforeach
             </div>
         @endif
+
+        <script>
+            // Handle validation errors
+            @if($errors->any())
+                var errorMessages = [];
+                @foreach($errors->all() as $error)
+                    errorMessages.push('{{ $error }}');
+                @endforeach
+                showToast(errorMessages.join('\n'), 'error');
+            @endif
+        </script>
 
         <div class="table-responsive">
             <div class="table-wrapper">
@@ -778,6 +859,51 @@
                 $('#deleteForm').attr('action', '/' + adminPrefix + '/posts/' + postId);
                 $('#delete_message').html('Are you sure you want to delete the announcement <strong>"' + postTitle + '"</strong>?');
             });
+        });
+
+        // ==============+++++++++++++++++++=====================
+        // Function to show toast notification
+        function showToast(message, type = 'success') {
+            // Remove existing toast
+            $('.toast-notification').remove();
+            
+            var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle');
+            var toastHtml = '<div class="toast-notification ' + type + '">' +
+                '<i class="fa ' + icon + '"></i>' +
+                '<span>' + message + '</span>' +
+                '<span class="close-toast">&times;</span>' +
+                '</div>';
+            
+            $('body').append(toastHtml);
+            
+            // Auto remove after 4 seconds
+            setTimeout(function() {
+                $('.toast-notification').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 4000);
+            
+            // Close on click
+            $('.close-toast').on('click', function() {
+                $(this).closest('.toast-notification').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            });
+        }
+
+        // Check for flash messages on page load
+        $(document).ready(function() {
+            @if(session('success'))
+                showToast('{{ session('success') }}', 'success');
+            @endif
+            
+            @if(session('error'))
+                showToast('{{ session('error') }}', 'error');
+            @endif
+            
+            @if(session('warning'))
+                showToast('{{ session('warning') }}', 'warning');
+            @endif
         });
     </script>
 @endsection
