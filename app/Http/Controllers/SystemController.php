@@ -110,6 +110,7 @@ class SystemController extends Controller
         $system->description = $request->input('description');
         $system->url = $request->input('url');
 
+        // Case A: User uploaded a new image asset file
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($system->image && Storage::disk('public')->exists($system->image)) {
@@ -124,6 +125,14 @@ class SystemController extends Controller
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'Failed to upload image: ' . $e->getMessage());
             }
+        }
+
+        // Case B: User requested to detach the current image without uploading a replacement
+        elseif ($request->input('remove_image') == '1') {
+            if ($system->image && Storage::disk('public')->exists($system->image)) {
+                Storage::disk('public')->delete($system->image);
+            }
+            $system->image = null;
         }
 
         $system->save();
