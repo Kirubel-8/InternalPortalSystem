@@ -702,7 +702,7 @@
                                    data-name="{{ $system->name }}" 
                                    data-description="{{ $system->description }}" 
                                    data-url="{{ $system->url }}" 
-                                   data-image="{{ $system->image }}">
+                                   data-image="{{ $system->image ? asset('storage/' . $system->image) : '' }}">
                                     <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                                 </a>
                                 <a href="#deleteEmployeeModal" class="delete" data-toggle="modal" 
@@ -772,7 +772,7 @@
     </div>
 
     <!-- EDIT Modal -->
-    <div id="editEmployeeModal" class="modal fade" tabindex="-1">
+    <!-- <div id="editEmployeeModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="editForm" method="POST" enctype="multipart/form-data">
@@ -812,6 +812,57 @@
                 </form>
             </div>
         </div>
+    </div> -->
+
+    <!-- EDIT Modal -->
+    <div id="editEmployeeModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editForm" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <!-- Hidden input to track if the user wants to remove the image -->
+                    <input type="hidden" name="remove_image" id="remove_image_input" value="0">
+                    
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fa fa-edit mr-2"></i> Edit Service</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label><i class="fa fa-tag mr-1"></i> Service Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="edit_name" class="form-control" placeholder="Enter service name" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa fa-align-left mr-1"></i> Description <span class="text-danger">*</span></label>
+                            <textarea name="description" id="edit_description" class="form-control" rows="3" placeholder="Enter service description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa fa-link mr-1"></i> URL <span class="text-danger">*</span></label>
+                            <input type="url" name="url" id="edit_url" class="form-control" placeholder="https://example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa fa-image mr-1"></i> Current Image</label>
+                            <div id="current_image_container" style="display: flex; align-items: center; gap: 15px;">
+                                <div id="current_image_preview" class="current-image-preview"></div>
+                                <button type="button" id="btn_remove_image" class="btn btn-danger btn-sm" style="display: none;">
+                                    <i class="fa fa-trash"></i> Remove Image
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa fa-upload mr-1"></i> New Image (Optional)</label>
+                            <input type="file" name="image" id="edit_image_file" class="form-control" accept="image/*">
+                            <small class="text-muted">Uploading a new image will automatically replace the old one.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" data-dismiss="modal"><i class="fa fa-times mr-1"></i> Cancel</button>
+                        <button type="submit" class="btn-edit"><i class="fa fa-save mr-1"></i> Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- DELETE Modal -->
@@ -842,29 +893,56 @@
     <script type="text/javascript">
         $(document).ready(function() {
             // Edit button click
-            $('.edit').on('click', function() {
-                var sysId = $(this).data('id');
-                var sysName = $(this).data('name');
-                var sysDescription = $(this).data('description');
-                var sysUrl = $(this).data('url');
-                var sysImage = $(this).data('image');
+        $('.edit').on('click', function() {
+            var sysId = $(this).data('id');
+            var sysName = $(this).data('name');
+            var sysDescription = $(this).data('description');
+            var sysUrl = $(this).data('url');
+            var sysImage = $(this).data('image');
 
-                // Fix the URL - use the admin prefix from current URL
-                var pathParts = window.location.pathname.split('/');
-                var adminPrefix = pathParts[1];
-                
-                // Set form action with admin prefix
-                $('#editForm').attr('action', '/' + adminPrefix + '/systems/' + sysId);
-                $('#edit_name').val(sysName);
-                $('#edit_description').val(sysDescription);
-                $('#edit_url').val(sysUrl);
-                
-                if (sysImage) {
-                    $('#current_image_preview').html('<img src="/storage/' + sysImage + '" width="100" height="80" class="img-thumbnail">');
-                } else {
-                    $('#current_image_preview').html('<span class="text-muted">No image uploaded</span>');
-                }
-            });
+            // Reset image removal tracker states
+            $('#remove_image_input').val('0');
+            $('#edit_image_file').val(''); // Clear file inputs
+            $('#btn_remove_image').hide();
+
+            var pathParts = window.location.pathname.split('/');
+            var adminPrefix = pathParts[1];
+            
+            $('#editForm').attr('action', '/' + adminPrefix + '/systems/' + sysId);
+            $('#edit_name').val(sysName);
+            $('#edit_description').val(sysDescription);
+            $('#edit_url').val(sysUrl);
+            
+            // if (sysImage) {
+            //     $('#current_image_preview').html('<img src="/storage/' + sysImage + '" width="100" height="80" class="img-thumbnail">');
+            //     $('#btn_remove_image').show();
+            // } else {
+            //     $('#current_image_preview').html('<span class="text-muted">No image uploaded</span>');
+            // }
+
+            // FIXED: Direct rendering of full path variable mapping
+            if (sysImage) {
+                $('#current_image_preview').html('<img src="' + sysImage + '" width="100" height="80" class="img-thumbnail">');
+                $('#btn_remove_image').show();
+            } else {
+                $('#current_image_preview').html('<span class="text-muted">No image uploaded</span>');
+            }
+        });
+
+        // Remove Image button click handler inside modal
+        $('#btn_remove_image').on('click', function() {
+            $('#remove_image_input').val('1'); // Mark for removal backend check
+            $('#current_image_preview').html('<span class="text-danger"><i class="fa fa-minus-circle"></i> Image marked for deletion</span>');
+            $(this).hide();
+        });
+
+        // Clear things up if user chooses a new local file during edit
+        $('#edit_image_file').on('change', function() {
+            if ($(this).val()) {
+                $('#remove_image_input').val('0');
+                $('#btn_remove_image').hide();
+            }
+        });
 
             // Delete button click
             $('.delete').on('click', function() {

@@ -7,7 +7,7 @@
         box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         position: relative;
         overflow: hidden;
-        min-height: 280px;
+        min-height: 200px;
         display: flex;
         flex-direction: column;
         cursor: pointer;
@@ -34,13 +34,13 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+        background: linear-gradient(-135deg, rgba(24, 27, 94, 0.5), rgba(24, 27, 94, 0.5));
         border-radius: 15px;
         transition: all 0.4s ease;
     }
 
     .services-box.bg-image:hover::before {
-        background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6));
+        background: linear-gradient(135deg, rgba(24, 27, 94, 0.7), rgba(24, 27, 94, 0.5));
     }
 
     .services-box.bg-image .services-icon i,
@@ -57,7 +57,7 @@
 
     /* Default gradient background for cards without image */
     .services-box.default-bg {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #181b5e, #181b5e);
         color: white;
     }
 
@@ -217,7 +217,7 @@
             </div>
         </div>
 
-        <div class="services-row mt-5 pt-3">
+        {{--<div class="services-row mt-5 pt-3">
             @forelse($portalsystem as $portalsys)
                 <div class="services-col">
                     <div class="services-box 
@@ -233,7 +233,8 @@
                     >
                         <a href="{{ $portalsys->url }}" target="_blank">
                             <div class="services-icon">
-                                <i class="pe-7s-notebook"></i>
+                                <!-- <i class="pe-7s-monitor"></i> -->
+                                <i class="pe-7s-global"></i>
                             </div>
                             <h5>{{ $portalsys->name }}</h5>
                             <p>{{ $portalsys->description }}</p>
@@ -251,6 +252,49 @@
                     </div>
                 </div>
             @endforelse
+        </div> --}}
+
+        <div class="services-row mt-5 pt-3">
+    @forelse($portalsystem as $portalsys)
+        <div class="services-col">
+            <!-- Removed the dynamic background-image logic so it doesn't fill the box -->
+            <div class="services-box default-bg">
+                <!-- Using flex alignment to position text on the left and icon on the right -->
+                <a href="{{ $portalsys->url }}" target="_blank" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; text-decoration: none; color: inherit;">
+                    
+                    <!-- Content Area (Left Side) -->
+                    <div class="service-content-left" style="flex: 1; padding-right: 15px;">
+                        <h5>{{ $portalsys->name }}</h5>
+                        <p>{{ $portalsys->description }}</p>
+                        <span class="service-link">
+                            Access Service <i class="mdi mdi-arrow-right ml-1"></i>
+                        </span>
+                    </div>
+
+                    <!-- Icon Area (Right Side) -->
+                    <div class="services-icon" style="flex-shrink: 0; margin-top: 5px;">
+                        @if($portalsys->image && file_exists(storage_path('app/public/' . $portalsys->image)))
+                            <!-- Custom Uploaded Service Icon -->
+                            <img src="{{ asset('storage/' . $portalsys->image) }}" 
+                                 alt="{{ $portalsys->name }}" 
+                                 style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px;">
+                        @else
+                            <!-- Fallback Default Icon if no custom image is uploaded -->
+                            <i class="pe-7s-global" style="font-size: 32px;"></i>
+                        @endif
+                    </div>
+
+                </a>
+            </div>
         </div>
+    @empty
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-info">
+                <i class="mdi mdi-information-outline"></i>
+                No services available at the moment. Please check back later.
+            </div>
+        </div>
+    @endforelse
+</div>
     </div>
 </section>

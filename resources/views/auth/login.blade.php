@@ -80,18 +80,21 @@
     padding: 12px;
     font-weight: 600;
     transition: all 0.3s;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: none;
+    /* background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none; */
+    background: #ffffff;
+    border: 1px solid #ff9800; /* Standard orange, or use a specific hex like #ff5722 */
+    color: #ff9800; /* Optional: changes text color to match the border */
 }
 
 .btn-user:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(102,126,234,0.4);
-    color: #f3f2f2;
+    color: #181b5e;
 }
 
 .btn {
-    color: #f3f2f2;
+    color: #181b5e;
 }
 
 .password-wrapper {
@@ -232,7 +235,7 @@
         <div class="card">
             <div class="card-body p-0">
                 <div class="row g-0">
-                    <div class="col-lg-6 d-none d-lg-block" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 40px;">
+                    <div class="col-lg-6 d-none d-lg-block" style="background: linear-gradient(135deg, #181b5e, #181b5e); padding: 40px;">
                         <div class="text-center text-white">
                             <div class="mb-4">
                                 <!-- <i class="fas fa-brain" style="font-size: 60px; opacity: 0.9;"></i> -->
@@ -244,7 +247,7 @@
                                     <i class="fas fa-cogs" style="font-size: 25px; opacity: 0.7; position: absolute; bottom: -5px; right: -10px;"></i>
                                 </div>
                             </div>
-                            <h3 class="mb-3">Welcome Back!</h3>
+                            <h3 class="mb-3"><br></h3>
                             <p class="opacity-75">Access your account to manage the Ethiopian AI Institute internal systems.</p>
                             <div class="mt-5 pt-3">
                                 <div class="d-flex justify-content-center gap-3">
